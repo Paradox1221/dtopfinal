@@ -1,0 +1,17 @@
+{
+  "name": "codespace-linux-desktop",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {},
+  "postCreateCommand": "bash .devcontainer/scripts/install-desktop.sh",
+  "forwardPorts": [6080, 5901],
+  "portsAttributes": {
+    "6080": {
+      "label": "Linux Desktop (noVNC)",
+      "onAutoForward": "notify"
+    },
+    "5901": {
+      "label": "VNC (TigerVNC)",
+      "onAutoForward": "silent"
+    }
+  }
+}
