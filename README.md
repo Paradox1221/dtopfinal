@@ -12,6 +12,7 @@ Run:
 ```bash
 bash .devcontainer/scripts/start-desktop.sh
 ```
+
 Default password is codespace. To change use:
 ```bash
 vncpasswd
