@@ -12,7 +12,11 @@ Run:
 ```bash
 bash .devcontainer/scripts/start-desktop.sh
 ```
-
+Default Password is Codespace. Use:
+```bash
+vncpasswd
+```
+to change
 ### 3) Open the desktop
 - In the **Ports** tab, open port **6080** (`Linux Desktop (noVNC)`).
 - This opens the desktop in your browser.
