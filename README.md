@@ -17,15 +17,6 @@ bash .devcontainer/scripts/start-desktop.sh
 - In the **Ports** tab, open port **6080** (`Linux Desktop (noVNC)`).
 - This opens the desktop in your browser.
 
-### Default credentials
-- Default VNC password: `codespace`
-- You can override it before start:
-
-```bash
-export VNC_PASSWD='your-strong-password'
-bash .devcontainer/scripts/start-desktop.sh
-```
-
 ### Stop desktop
 ```bash
 bash .devcontainer/scripts/stop-desktop.sh
