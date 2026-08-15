@@ -16,7 +16,7 @@ Default password is codespace. To change use:
 ```bash
 vncpasswd
 ```
-to change
+
 ### 3) Open the desktop
 - In the **Ports** tab, open port **6080** (`Linux Desktop (noVNC)`).
 - This opens the desktop in your browser.
