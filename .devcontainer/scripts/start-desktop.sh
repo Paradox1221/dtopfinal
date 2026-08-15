@@ -6,14 +6,16 @@ VNC_PORT="${VNC_PORT:-5901}"
 NOVNC_PORT="${NOVNC_PORT:-6080}"
 GEOMETRY="${GEOMETRY:-1920x1080}"
 DEPTH="${DEPTH:-24}"
-VNC_PASSWD="${VNC_PASSWD:-codespace}"
 
 mkdir -p "${HOME}/.vnc"
 
-if [ ! -f "${HOME}/.vnc/passwd" ]; then
-  printf "%s\n" "${VNC_PASSWD}" | vncpasswd -f > "${HOME}/.vnc/passwd"
-  chmod 600 "${HOME}/.vnc/passwd"
-fi
+# Disable VNC password authentication
+cat > "${HOME}/.vnc/config" <<'EOF'
+SecurityTypes=None
+EOF
+
+# Remove any old password file
+rm -f "${HOME}/.vnc/passwd"
 
 if [ ! -x "${HOME}/.vnc/xstartup" ]; then
   cat > "${HOME}/.vnc/xstartup" <<'EOF'
@@ -29,10 +31,12 @@ fi
 vncserver -kill ":${DISPLAY_NUM}" >/dev/null 2>&1 || true
 pkill -f "websockify.*${NOVNC_PORT}" >/dev/null 2>&1 || true
 
+# Start TigerVNC with no authentication
 vncserver ":${DISPLAY_NUM}" \
   -geometry "${GEOMETRY}" \
   -depth "${DEPTH}" \
   -localhost no \
+  -SecurityTypes None \
   -rfbport "${VNC_PORT}"
 
 nohup websockify --web=/usr/share/novnc/ "${NOVNC_PORT}" "localhost:${VNC_PORT}" \
@@ -44,7 +48,7 @@ Linux desktop started.
 
 Open Codespaces port ${NOVNC_PORT} in browser (noVNC web client).
 Optional direct VNC port: ${VNC_PORT}
-VNC password: ${VNC_PASSWD}
+VNC authentication: DISABLED
 
 Tip:
   bash .devcontainer/scripts/stop-desktop.sh
