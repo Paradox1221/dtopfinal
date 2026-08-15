@@ -13,10 +13,10 @@ sudo apt-get install -y --no-install-recommends \
 echo "==> Enabling Ubuntu Universe repository..."
 sudo add-apt-repository -y universe
 
-echo "==> Updating package lists again..."
+echo "==> Updating package lists..."
 sudo apt-get update
 
-echo "==> Installing desktop, VNC, noVNC, and Falkon..."
+echo "==> Installing XFCE, TigerVNC, noVNC, and Falkon..."
 sudo apt-get install -y --no-install-recommends \
   xfce4 \
   xfce4-goodies \
@@ -31,25 +31,40 @@ sudo apt-get install -y --no-install-recommends \
   falkon
 
 # ------------------------------------------------------------
-# Verify Falkon actually installed
+# Verify Falkon
 # ------------------------------------------------------------
 
 if ! command -v falkon >/dev/null 2>&1; then
-    echo "ERROR: Falkon was not installed correctly."
-    echo "Try running: apt-cache policy falkon"
+    echo "ERROR: Falkon was not installed."
+    echo "Package information:"
+    apt-cache policy falkon || true
     exit 1
 fi
 
-echo "==> Falkon installed successfully:"
+echo "==> Falkon successfully installed:"
 falkon --version || true
 
 # ------------------------------------------------------------
-# TigerVNC configuration
+# VNC configuration
 # ------------------------------------------------------------
 
 echo "==> Configuring TigerVNC..."
 
 mkdir -p "${HOME}/.vnc"
+
+# Disable VNC authentication
+cat > "${HOME}/.vnc/config" <<'EOF'
+SecurityTypes=None
+EOF
+
+# Remove any existing VNC password
+rm -f "${HOME}/.vnc/passwd"
+
+# ------------------------------------------------------------
+# XFCE startup
+# ------------------------------------------------------------
+
+echo "==> Configuring XFCE startup..."
 
 cat > "${HOME}/.vnc/xstartup" <<'EOF'
 #!/usr/bin/env bash
@@ -61,14 +76,6 @@ exec startxfce4
 EOF
 
 chmod +x "${HOME}/.vnc/xstartup"
-
-# Disable VNC password authentication
-cat > "${HOME}/.vnc/config" <<'EOF'
-SecurityTypes=None
-EOF
-
-# Remove any old password file so it isn't used
-rm -f "${HOME}/.vnc/passwd"
 
 # ------------------------------------------------------------
 # Falkon desktop shortcut
@@ -94,15 +101,15 @@ EOF
 chmod +x "${HOME}/Desktop/falkon.desktop"
 
 # ------------------------------------------------------------
-# XFCE default desktop backdrop
+# XFCE default backdrop
 # ------------------------------------------------------------
 
-echo "==> Resetting XFCE desktop backdrop to default..."
+echo "==> Resetting XFCE desktop configuration..."
 
 XFCE_CONFIG="${HOME}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
 
-if [ -f "$XFCE_CONFIG" ]; then
-    rm -f "$XFCE_CONFIG"
+if [ -f "${XFCE_CONFIG}" ]; then
+    rm -f "${XFCE_CONFIG}"
 fi
 
 # ------------------------------------------------------------
@@ -110,16 +117,18 @@ fi
 # ------------------------------------------------------------
 
 echo
-echo "========================================"
+echo "=========================================="
 echo " Desktop installation complete!"
-echo "========================================"
+echo "=========================================="
 echo
-echo "Falkon:      $(command -v falkon)"
-echo "VNC auth:    Disabled"
-echo "VNC startup: ${HOME}/.vnc/xstartup"
-echo "Falkon icon: ${HOME}/Desktop/falkon.desktop"
+echo "Falkon:       $(command -v falkon)"
+echo "VNC auth:     DISABLED"
+echo "Falkon icon:  ${HOME}/Desktop/falkon.desktop"
+echo "Backdrop:     XFCE default"
 echo
 echo "Falkon version:"
 falkon --version || true
 echo
-echo "Done."
+echo "Run the desktop with:"
+echo "  bash .devcontainer/scripts/start-desktop.sh"
+echo
